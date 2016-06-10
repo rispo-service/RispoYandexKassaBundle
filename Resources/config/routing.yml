@@ -1,0 +1,3 @@
+rispo_yandex_kassa_homepage:
+    path:     /hello/{name}
+    defaults: { _controller: RispoYandexKassaBundle:Default:index }
