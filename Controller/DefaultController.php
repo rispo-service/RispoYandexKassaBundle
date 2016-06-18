@@ -6,8 +6,43 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class DefaultController extends Controller
 {
-    public function indexAction($name)
+    /**
+     * @param Request $request
+     * @return array
+     */
+    public function checkOrderAction(Request $request)
     {
-        return $this->render('RispoYandexKassaBundle:Default:index.html.twig', array('name' => $name));
+
+        return [];
+    }
+
+    /**
+     * @param Request $request
+     * @return array
+     */
+    public function paymentAvisoAction(Request $request)
+    {
+
+        return [];
+    }
+
+    /**
+     * @param Request $request
+     * @return array
+     */
+    public function successAction(Request $request)
+    {
+
+        return [];
+    }
+
+    /**
+     * @param Request $request
+     * @return array
+     */
+    public function failAction(Request $request)
+    {
+
+        return [];
     }
 }

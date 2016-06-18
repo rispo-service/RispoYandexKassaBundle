@@ -1,4 +1,21 @@
+parameters:
+    rispo.form.type.yandexkassa.class: Rispo\YandexKassaBundle\Form\Type\YandexKassaType
+    rispo.yandexkassa.class: Rispo\YandexKassaBundle\Plugin\YandexKassaPlugin
+    rispo.yandexkassa.client.class: Rispo\YandexKassaBundle\Api\Client
+
 services:
-#    rispo_yandex_kassa.example:
-#        class: Rispo\YandexKassaBundle\Example
-#        arguments: [@service_id, "plain_value", %parameter%]
+    rispo.form.type.yandexkassa:
+        class: %rispo.form.type.yandexkassa.class%
+        tags:
+            - { name: "payment.method_form_type" }
+            - { name: "form.type", alias: "yandexkassa" }
+
+    rispo.plugin.yandexkassa:
+        class: %rispo.yandexkassa.class%
+        arguments: [ "@rispo.yandexkassa.client" ]
+        tags:
+            - { name: "payment.plugin" }
+
+    rispo.yandexkassa.client:
+        class: %rispo.yandexkassa.client.class%
+        arguments: [ %rispo_yandex_kassa_login%, %rispo_yandex_kassa_test% ]

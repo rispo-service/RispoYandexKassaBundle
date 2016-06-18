@@ -1,7 +1,7 @@
 # YandexKassaBundle
 
-For Symfony (version 2 or 3)
+For Symfony (version 2.8)
 
 http://jmsyst.com/bundles/JMSPaymentCoreBundle/master/payment_backends
 
-http://rispo.ru
+Made in http://rispo.ru

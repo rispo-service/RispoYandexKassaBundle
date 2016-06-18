@@ -1,3 +1,15 @@
-rispo_yandex_kassa_homepage:
-    path:     /hello/{name}
-    defaults: { _controller: RispoYandexKassaBundle:Default:index }
+rispo_yandex_kassa_check_order:
+    pattern:  /yandex_kassa/check_order
+    defaults: { _controller: RispoYandexKassaBundle:Default:checkOrder }
+
+rispo_yandex_kassa_payment_aviso:
+    pattern:  /yandex_kassa/payment_aviso
+    defaults: { _controller: RispoYandexKassaBundle:Default:paymentAviso }
+
+rispo_yandex_kassa_success:
+    pattern:  /yandex_kassa/success
+    defaults: { _controller: RispoYandexKassaBundle:Default:success }
+
+rispo_yandex_kassa_fail:
+    pattern:  /yandex_kassa/fail
+    defaults: { _controller: RispoYandexKassaBundle:Default:fail }
