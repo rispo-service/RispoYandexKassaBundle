@@ -51,7 +51,10 @@ class YandexKassaPlugin extends AbstractPlugin
             throw $this->createRedirectActionException($transaction);
         }
 
-        // TODO: ...
+        // approve
+        $transaction->setProcessedAmount($transaction->getPayment()->getTargetAmount());
+        $transaction->setResponseCode(PluginInterface::RESPONSE_CODE_SUCCESS);
+        $transaction->setReasonCode(PluginInterface::REASON_CODE_SUCCESS);
     }
 
 

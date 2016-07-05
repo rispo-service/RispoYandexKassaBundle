@@ -8,18 +8,34 @@
 
 namespace Rispo\YandexKassaBundle\Api;
 
+use JMS\Payment\CoreBundle\Model\FinancialTransactionInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use JMS\Payment\CoreBundle\Plugin\PluginInterface;
 
 class Client
 {
+    /** @var Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface */
+    private $token_storage;
+
+
     /** @var string */
-    private $login;
+    private $shopId;
+
+    /** @var string */
+    private $scid;
+
+    /** @var string */
+    private $shopPassword;
 
     /** @var bool */
     private $test;
 
-    public function __construct($login, $test)
+    public function __construct(TokenStorageInterface $token_storage, $shopId, $scid, $shopPassword, $test)
     {
-        $this->login = $login;
+        $this->token_storage = $token_storage;
+        $this->shopId = $shopId;
+        $this->scid = $scid;
+        $this->shopPassword = $shopPassword;
         $this->test = $test;
     }
 
@@ -28,8 +44,9 @@ class Client
      */
     private function getWebServerUrl()
     {
-        return $this->test ? 'http://test.robokassa.ru/Index.aspx' : 'https://auth.robokassa.ru/Merchant/Index.aspx';
+        return $this->test ? 'https://demomoney.yandex.ru/eshop.xml' : 'https://money.yandex.ru/eshop.xml';
     }
+
 
     /**
      * @param FinancialTransactionInterface $transaction
@@ -44,23 +61,14 @@ class Client
         $data = $transaction->getExtendedData();
         $data->set('inv_id', $inv_id);
 
-        /*
-        $description = 'test desc';
-        if($data->has('description')) {
-            $description = $data->get('description');
-        }
-
         $parameters = [
-            'MrchLogin' => $this->login,
-            'OutSum' => $transaction->getRequestedAmount(),
-            'InvId' => $inv_id,
-            'Desc' => $description,
-            'IncCurrLabel' => '',
-            'SignatureValue' => $this->auth->sign($this->login, $transaction->getRequestedAmount(), $inv_id)
+            'shopId' => $this->shopId,
+            'scid' => $this->scid,
+            'customerNumber' => $this->token_storage->getToken()->getUser()->getId(),
+            'Sum' => $transaction->getRequestedAmount(),
+            // 'paymentType' => 'PC',
+            'orderNumber' => $instruction->getId()
         ];
-        */
-
-        $parameters = [];
 
         return $this->getWebServerUrl() .'?' . http_build_query($parameters);
     }

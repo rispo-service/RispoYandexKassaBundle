@@ -21,9 +21,10 @@ class Configuration implements ConfigurationInterface
         $rootNode = $treeBuilder->root('rispo_yandex_kassa');
 
         $rootNode->children()
-            ->scalarNode('login')->isRequired()->end()
-            ->scalarNode('password')->isRequired()->end()
-            ->scalarNode('test')->defaultTrue()->end()
+            ->scalarNode('rispo_yandexkassa_shopId')->isRequired()->end()
+            ->scalarNode('rispo_yandexkassa_scid')->isRequired()->end()
+            ->scalarNode('rispo_yandexkassa_ShopPassword')->isRequired()->end()
+            ->scalarNode('rispo_yandexkassa_test')->defaultTrue()->end()
             ->end();
 
         return $treeBuilder;

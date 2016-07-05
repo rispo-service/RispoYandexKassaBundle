@@ -1,10 +1,10 @@
 rispo_yandex_kassa_check_order:
     pattern:  /yandex_kassa/check_order
-    defaults: { _controller: RispoYandexKassaBundle:Default:checkOrder }
+    defaults: { _controller: RispoYandexKassaBundle:Default:checkOrder, _format: xml }
 
 rispo_yandex_kassa_payment_aviso:
     pattern:  /yandex_kassa/payment_aviso
-    defaults: { _controller: RispoYandexKassaBundle:Default:paymentAviso }
+    defaults: { _controller: RispoYandexKassaBundle:Default:paymentAviso, _format: xml }
 
 rispo_yandex_kassa_success:
     pattern:  /yandex_kassa/success

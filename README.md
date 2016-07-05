@@ -1,7 +1,13 @@
 # YandexKassaBundle
 
-For Symfony (version 2.8)
+For Symfony (tested for version 2.8)
 
 http://jmsyst.com/bundles/JMSPaymentCoreBundle/master/payment_backends
 
-Made in http://rispo.ru
+Use Event Listener from payment_avisio request.
+
+-------------
+
+Made in [RiSPO](http://rispo.ru)
+ 
+ 

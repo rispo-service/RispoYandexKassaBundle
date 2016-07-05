@@ -18,4 +18,9 @@ services:
 
     rispo.yandexkassa.client:
         class: %rispo.yandexkassa.client.class%
-        arguments: [ %rispo_yandex_kassa_login%, %rispo_yandex_kassa_test% ]
+        arguments:
+            - "@security.token_storage"
+            - %rispo_yandexkassa_shopId%
+            - %rispo_yandexkassa_scid%
+            - %rispo_yandexkassa_ShopPassword%
+            - %rispo_yandexkassa_test%
