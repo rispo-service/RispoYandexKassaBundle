@@ -24,11 +24,6 @@ class DefaultController extends Controller
      */
     public function checkOrderAction(Request $request)
     {
-        $hipChat = $this->container->get('hipchat');
-        $hipChat->message_room('hhonline', 'API', 'checkOrderAction');
-        $hipChat->message_room('hhonline', 'API',
-            sizeof($request->request->all()) ? implode(' --- ', $request->request->all()) : 'no params' );
-
         $hash = md5(
             $request->get('action') . ';' . $request->get('orderSumAmount')
             . ';' . $request->get('orderSumCurrencyPaycash') . ';' . $request->get('orderSumBankPaycash')
@@ -36,36 +31,10 @@ class DefaultController extends Controller
             . ';' . $request->get('invoiceId') . ';' . $request->get('customerNumber')
             . ';' . $this->container->getParameter('rispo_yandexkassa_ShopPassword'));
 
-        $hipChat->message_room('hhonline', '-----', '-----');
-
-        $hipChat->message_room('hhonline', 'hash', strtolower($hash) );
-        $hipChat->message_room('hhonline', 'md5', strtolower($request->get('md5')));
-
-        $hipChat->message_room('hhonline', '-----', '-----');
-
-        $hipChat->message_room('hhonline', '1: action', $request->get('action'));
-        $hipChat->message_room('hhonline', '2: orderSumAm..', $request->get('orderSumAmount'));
-        $hipChat->message_room('hhonline', '3: orderSumCu..', $request->get('orderSumCurrencyPaycash'));
-        $hipChat->message_room('hhonline', '4: orderSumBa..', $request->get('orderSumBankPaycash'));
-        $hipChat->message_room('hhonline', '5: shopId', $this->container->getParameter('rispo_yandexkassa_shopId'));
-        $hipChat->message_room('hhonline', '6: invoiceId', $request->get('invoiceId'));
-        $hipChat->message_room('hhonline', '7: customerNu..', $request->get('customerNumber'));
-        $hipChat->message_room('hhonline', '8: ShopPasswo..', $this->container->getParameter('rispo_yandexkassa_ShopPassword'));
-
-        $hipChat->message_room('hhonline', '-----', '-----');
-        $hipChat->message_room('hhonline', 'orderNumber', $request->get('orderNumber'));
-
         $code = 1;
         if ( strtolower($hash) == strtolower( $request->get('md5') ) ){
             $code = 0;
-            // TODO set to APPROVED
-        } else {
-            // TODO set to CANCELED
         }
-        $code = 0;
-
-        $hipChat->message_room('hhonline', 'code', 'code: ' . $code);
-        $hipChat->message_room('hhonline', '-----', '-----');
 
         return [
             'requestDatetime' => $request->get('requestDatetime'),
@@ -82,14 +51,6 @@ class DefaultController extends Controller
      */
     public function paymentAvisoAction(Request $request)
     {
-        // TODO set to DEPOSITING
-
-        $hipChat = $this->container->get('hipchat');
-        $hipChat->message_room('hhonline', 'API', 'paymentAvisoAction');
-
-        $hipChat->message_room('hhonline', 'API',
-            sizeof($request->request->all()) ? implode('; ', $request->request->all()) : 'no params' );
-
         $hash = md5($request->get('action')
             . ';' . $request->get('orderSumAmount')
             . ';' . $request->get('orderSumCurrencyPaycash')
@@ -101,20 +62,14 @@ class DefaultController extends Controller
 
         $code = 1;
         if ( strtolower($hash) == strtolower($request->get('md5') ) ) {
-            // TODO set to DEPOSITED
             $code = 0;
-        } else {
-            // TODO set to FAILED
         }
-
-        $code = 0;
 
         if ($code == 0) {
             $instruction = $this->getInstruction( $request->get('orderNumber') );
 
             /** @var FinancialTransactionInterface $transaction */
             if (null === $transaction = $instruction->getPendingTransaction()) {
-                $hipChat->message_room('hhonline', 'FAIL', 'FAIL (null === $transaction = $instruction->getPendingTransaction())');
                 return new Response('FAIL (null === $transaction = $instruction->getPendingTransaction())', 500);
             }
 
@@ -125,11 +80,7 @@ class DefaultController extends Controller
                         $request->get('orderSumAmount')
                 );
 
-                // TODO set to DEPOSITED
-
             } catch (\Exception $e) {
-                // TODO set to FAILED
-                $hipChat->message_room('hhonline', 'FAIL', 'approveAndDeposit');
                 return new Response('FAIL (approveAndDeposit)', 500);
             }
 
