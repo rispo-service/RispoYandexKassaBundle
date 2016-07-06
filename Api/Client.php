@@ -66,7 +66,7 @@ class Client
             'scid' => $this->scid,
             'customerNumber' => $this->token_storage->getToken()->getUser()->getId(),
             'Sum' => $transaction->getRequestedAmount(),
-            // 'paymentType' => 'PC',
+            'cms_name' => 'symfony2-github',
             'orderNumber' => $instruction->getId()
         ];
 
