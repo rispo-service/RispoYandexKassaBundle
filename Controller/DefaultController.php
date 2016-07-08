@@ -101,9 +101,8 @@ class DefaultController extends Controller
      */
     public function successAction(Request $request)
     {
-        $out_sum = $request->get('OutSum');
-        $inv_id = $request->get('InvId');
-        $instruction = $this->getInstruction($inv_id);
+        $orderNumber = $request->get('orderNumber');
+        $instruction = $this->getInstruction($orderNumber);
         $data = $instruction->getExtendedData();
         return $this->redirect($data->get('return_url'));
     }
@@ -114,8 +113,8 @@ class DefaultController extends Controller
      */
     public function failAction(Request $request)
     {
-        $inv_id = $request->get('InvId');
-        $instruction = $this->getInstruction($inv_id);
+        $orderNumber = $request->get('orderNumber');
+        $instruction = $this->getInstruction($orderNumber);
         $data = $instruction->getExtendedData();
         return $this->redirect($data->get('cancel_url'));
     }
