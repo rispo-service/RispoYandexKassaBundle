@@ -34,7 +34,7 @@ register the new bundle:
     // in AppKernel::registerBundles()
     $bundles = array(
         // ...
-        new Rispo\YandexKassaBundle\RispoYandexKassa(),
+        new Rispo\YandexKassaBundle\RispoYandexKassaBundle(),
         // ...
     );
 
@@ -71,11 +71,12 @@ Configuration
 .. code-block :: yml
 
     // routing.yml
-    karser_robokassa:
+    rispo_yandexkassa:
         resource: "@RispoYandexKassaBundle/Resources/config/routing.yml"
         prefix:   /
 
 =====
 Usage
 =====
+
 Usage `example <https://github.com/schmittjoh/JMSPaymentCoreBundle/blob/master/Resources/doc/usage.rst>`_
