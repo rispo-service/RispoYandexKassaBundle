@@ -11,12 +11,16 @@ namespace Rispo\YandexKassaBundle\Api;
 use JMS\Payment\CoreBundle\Model\FinancialTransactionInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use JMS\Payment\CoreBundle\Plugin\PluginInterface;
+use FOS\UserBundle\Model\User;
 
+/**
+ * Class Client
+ * @package Rispo\YandexKassaBundle\Api
+ */
 class Client
 {
     /** @var Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface */
-    private $token_storage;
-
+    private $tokenStorage;
 
     /** @var string */
     private $shopId;
@@ -30,9 +34,9 @@ class Client
     /** @var bool */
     private $test;
 
-    public function __construct(TokenStorageInterface $token_storage, $shopId, $scid, $shopPassword, $test)
+    public function __construct(TokenStorageInterface $tokenStorage, $shopId, $scid, $shopPassword, $test)
     {
-        $this->token_storage = $token_storage;
+        $this->tokenStorage = $tokenStorage;
         $this->shopId = $shopId;
         $this->scid = $scid;
         $this->shopPassword = $shopPassword;
@@ -61,16 +65,41 @@ class Client
         $data = $transaction->getExtendedData();
         $data->set('inv_id', $inv_id);
 
-        $parameters = [
+        $data = [
             'shopId' => $this->shopId,
             'scid' => $this->scid,
-            'customerNumber' => $this->token_storage->getToken()->getUser()->getId(),
             'Sum' => $transaction->getRequestedAmount(),
             'cms_name' => 'symfony2-github',
             'orderNumber' => $instruction->getId()
         ];
 
-        return $this->getWebServerUrl() .'?' . http_build_query($parameters);
+        $user = $this->tokenStorage->getToken()->getUser();
+        if ($user instanceof User) {
+            $data['customerNumber'] = $user->getId();
+        } else {
+            $data['customerNumber'] = 0;
+        }
+
+        $url = $this->getWebServerUrl();
+
+        // Initialize Guzzle client
+        $client = new \GuzzleHttp\Client();
+
+        // Create a POST request
+        $response = $client->request(
+            'POST',
+            $url,
+            [
+                'form_params' => $data,
+                'allow_redirects' => false
+            ]
+        );
+
+        if($response->getStatusCode() == 302) {
+            return $response->getHeaderLine('Location');
+        } else {
+            throw new \Exception('Yandex.Kassa no redirect!');
+        }
     }
 
 }

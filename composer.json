@@ -6,8 +6,9 @@
   "license": "MIT",
   "require": {
     "php": ">=5.3.2",
-    "symfony/framework-bundle": ">=2.6,<3.0",
-    "jms/payment-core-bundle": "~1.0"
+    "symfony/framework-bundle": ">=2.7,<3.0",
+    "jms/payment-core-bundle": "~1.0",
+    "guzzlehttp/guzzle": "^6.2"
   },
   "autoload": {
     "psr-0": { "Rispo\\YandexKassaBundle": "" }
