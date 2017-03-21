@@ -2,6 +2,10 @@ parameters:
     rispo.form.type.yandexkassa.class: Rispo\YandexKassaBundle\Form\Type\YandexKassaType
     rispo.yandexkassa.class: Rispo\YandexKassaBundle\Plugin\YandexKassaPlugin
     rispo.yandexkassa.client.class: Rispo\YandexKassaBundle\Api\Client
+    rispo_yandexkassa_shopId: 0
+    rispo_yandexkassa_scid: 0
+    rispo_yandexkassa_ShopPassword: password
+    rispo_yandexkassa_test: false
 
 services:
     rispo.form.type.yandexkassa:
