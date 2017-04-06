@@ -70,7 +70,6 @@ class YandexKassaPlugin extends AbstractPlugin
         $actionRequest->setFinancialTransaction($transaction);
         $url = $this->client->getRedirectUrl($transaction);
 
-        dump($url);
         $actionRequest->setAction(new VisitUrl($url));
 
         return $actionRequest;

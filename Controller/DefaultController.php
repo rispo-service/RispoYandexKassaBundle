@@ -14,13 +14,15 @@ use Symfony\Component\Security\Core\SecurityContext;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use JMS\Payment\CoreBundle\Model\FinancialTransactionInterface;
 
-
+/**
+ * Class DefaultController
+ * @package Rispo\YandexKassaBundle\Controller
+ */
 class DefaultController extends Controller
 {
     /**
      * @param Request $request
      * @return array
-     * @Template("RispoYandexKassaBundle:Default:checkOrder.xml.twig")
      */
     public function checkOrderAction(Request $request)
     {
@@ -36,18 +38,17 @@ class DefaultController extends Controller
             $code = 0;
         }
 
-        return [
+        return $this->render("RispoYandexKassaBundle:Default:checkOrder.xml.twig", [
             'requestDatetime' => $request->get('requestDatetime'),
             'code' => $code,
             'invoiceId' => $request->get('invoiceId'),
             'shopId' => $request->get('shopId')
-        ];
+        ]);
     }
 
     /**
      * @param Request $request
      * @return array
-     * @Template("RispoYandexKassaBundle:Default:paymentAviso.xml.twig")
      */
     public function paymentAvisoAction(Request $request)
     {
@@ -87,12 +88,12 @@ class DefaultController extends Controller
             $this->getDoctrine()->getManager()->flush();
         }
 
-        return [
+        return $this->render("RispoYandexKassaBundle:Default:paymentAviso.xml.twig", [
             'requestDatetime' => $request->get('requestDatetime'),
             'code' => $code,
             'invoiceId' => $request->get('invoiceId'),
             'shopId' => $request->get('shopId')
-        ];
+        ]);
     }
 
     /**
