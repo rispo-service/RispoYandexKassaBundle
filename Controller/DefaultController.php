@@ -14,57 +14,37 @@ use Symfony\Component\Security\Core\SecurityContext;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use JMS\Payment\CoreBundle\Model\FinancialTransactionInterface;
 
-/**
- * Class DefaultController
- * @package Rispo\YandexKassaBundle\Controller
- */
+
 class DefaultController extends Controller
 {
     /**
      * @param Request $request
      * @return array
+     *
      */
     public function checkOrderAction(Request $request)
     {
-        $hash = md5(
-            $request->get('action') . ';' . $request->get('orderSumAmount')
-            . ';' . $request->get('orderSumCurrencyPaycash') . ';' . $request->get('orderSumBankPaycash')
-            . ';' . $this->container->getParameter('rispo_yandexkassa_shopId')
-            . ';' . $request->get('invoiceId') . ';' . $request->get('customerNumber')
-            . ';' . $this->container->getParameter('rispo_yandexkassa_ShopPassword'));
+        $code = $this->getCodeFromRequest($request);
 
-        $code = 1;
-        if ( strtolower($hash) == strtolower( $request->get('md5') ) ){
-            $code = 0;
-        }
-
-        return $this->render("RispoYandexKassaBundle:Default:checkOrder.xml.twig", [
-            'requestDatetime' => $request->get('requestDatetime'),
-            'code' => $code,
-            'invoiceId' => $request->get('invoiceId'),
-            'shopId' => $request->get('shopId')
-        ]);
+        return $this->render(
+            'RispoYandexKassaBundle:Default:checkOrder.xml.twig',
+            [
+                'requestDatetime' => $request->get('requestDatetime'),
+                'code' => $code,
+                'invoiceId' => $request->get('invoiceId'),
+                'shopId' => $request->get('shopId')
+            ]
+        );
     }
 
     /**
      * @param Request $request
      * @return array
+     * @throws \Exception
      */
     public function paymentAvisoAction(Request $request)
     {
-        $hash = md5($request->get('action')
-            . ';' . $request->get('orderSumAmount')
-            . ';' . $request->get('orderSumCurrencyPaycash')
-            . ';' . $request->get('orderSumBankPaycash')
-            . ';' . $this->container->getParameter('rispo_yandexkassa_shopId')
-            . ';' . $request->get('invoiceId')
-            . ';' . $request->get('customerNumber')
-            . ';' . $this->container->getParameter('rispo_yandexkassa_ShopPassword'));
-
-        $code = 1;
-        if ( strtolower($hash) == strtolower($request->get('md5') ) ) {
-            $code = 0;
-        }
+        $code = $this->getCodeFromRequest($request);
 
         if ($code == 0) {
             $instruction = $this->getInstruction( $request->get('orderNumber') );
@@ -88,17 +68,45 @@ class DefaultController extends Controller
             $this->getDoctrine()->getManager()->flush();
         }
 
-        return $this->render("RispoYandexKassaBundle:Default:paymentAviso.xml.twig", [
-            'requestDatetime' => $request->get('requestDatetime'),
-            'code' => $code,
-            'invoiceId' => $request->get('invoiceId'),
-            'shopId' => $request->get('shopId')
-        ]);
+        return $this->render(
+            'RispoYandexKassaBundle:Default:paymentAviso.xml.twig',
+            [
+                'requestDatetime' => $request->get('requestDatetime'),
+                'code' => $code,
+                'invoiceId' => $request->get('invoiceId'),
+                'shopId' => $request->get('shopId')
+            ]
+        );
+    }
+
+    /**
+     * @param Request $request
+     * @return int
+     */
+    private function getCodeFromRequest(Request $request)
+    {
+        $hash = md5(
+            implode(
+                ';',
+                [
+                    $request->get('action'),
+                    $request->get('orderSumAmount'),
+                    $request->get('orderSumCurrencyPaycash'),
+                    $request->get('orderSumBankPaycash'),
+                    $this->getParameter('rispo_yandexkassa_shopId'),
+                    $request->get('invoiceId'),
+                    $request->get('customerNumber'),
+                    $this->getParameter('rispo_yandexkassa_ShopPassword')
+                ]
+            )
+        );
+        return (int)(strtolower($hash) !== strtolower($request->get('md5')));
     }
 
     /**
      * @param Request $request
      * @return array
+     * @throws \Exception
      */
     public function successAction(Request $request)
     {
@@ -111,6 +119,7 @@ class DefaultController extends Controller
     /**
      * @param Request $request
      * @return array
+     * @throws \Exception
      */
     public function failAction(Request $request)
     {

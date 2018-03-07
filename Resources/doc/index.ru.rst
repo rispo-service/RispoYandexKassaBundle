@@ -2,8 +2,6 @@
 Установка
 ============
 
-Для установки необходимо воспользоваться менеджером пакетов Composer.
-
 Используте комманду:
 
 .. code-block :: bash
@@ -20,7 +18,7 @@
     // in AppKernel::registerBundles()
     $bundles = array(
         // ...
-        new Rispo\YandexKassaBundle\RispoYandexKassaBundle(),
+        new Rispo\YandexKassaBundle\RispoYandexKassa(),
         // ...
     );
 
@@ -45,36 +43,33 @@
 Настройки
 ------------
 
-Для настройки плагина необходимо отредактировать файл ``app/config/confing.yml``. Формат настройки следующий:
-
 .. code-block :: yml
 
     // config.yml
+    doctrine:
+        orm:
+            entity_managers:
+                default:
+                    mappings:
+                        JMSPaymentCoreBundle: ~
     rispo_yandex_kassa:
         rispo_yandexkassa_shopId: number
         rispo_yandexkassa_scid: number
         rispo_yandexkassa_ShopPassword: pass
         rispo_yandexkassa_test: true/false
 
-Также необходимо добавить перевод на язык сайта следующих ключей:
+И обновление схемы базы данных:
 
-form.label.yandexkassa
-Data yandexkassa
+    $ php app/console doctrine:schema:update --force
 
-Например, так:
+или
 
-.. code-block :: yml
-
-    # messages.ru.yml
-    "form.label.yandexkassa": "Яндекс касса (Карты VISA/Mastercard, Яндекс.Деньги, Сбербанк-ONLINE и т.д.)"
-    "Data yandexkassa": ""
-
-Также необходимо прописать файл маршрутов:
+    $ php bin/console doctrine:schema:update --force
 
 .. code-block :: yml
 
     // routing.yml
-    rispo_yandexkassa:
+    karser_robokassa:
         resource: "@RispoYandexKassaBundle/Resources/config/routing.yml"
         prefix:   /
 
@@ -83,9 +78,17 @@ Data yandexkassa
 Использование
 =====
 
-Информация об использовании доступна по адресу `пример <https://github.com/schmittjoh/JMSPaymentCoreBundle/blob/master/Resources/doc/usage.rst>`_
-
 Вот пример создания сервиса, который подписывается на собыие изменения статуса платежа и при положительной оплате производит применение платных услуг:
+
+
+.. code-block :: yml
+
+    // services.yml
+    app.payment_listener:
+        class: AppBundle\EventListener\PaymentListener
+        arguments: [@service_container]
+        tags:
+            - { name: kernel.event_listener, event: payment.state_change, method: onPaymentStateChange }
 
 .. code-block :: php
 
@@ -150,3 +153,5 @@ Data yandexkassa
             }
         }
     }
+
+Информация об использовании доступна по адресу `пример <https://github.com/schmittjoh/JMSPaymentCoreBundle/blob/master/Resources/doc/usage.rst>`_

@@ -1,6 +1,7 @@
 <?php
 
 /**
+ * Created by PhpStorm.
  * User: al
  * Date: 18.06.16
  * Time: 21:28
@@ -13,7 +14,7 @@ use JMS\Payment\CoreBundle\Model\FinancialTransactionInterface;
 use JMS\Payment\CoreBundle\Model\PaymentInstructionInterface;
 use JMS\Payment\CoreBundle\Plugin\AbstractPlugin;
 use JMS\Payment\CoreBundle\Plugin\Exception\Action\VisitUrl;
-use JMS\Payment\CoreBundle\Plugin\Exception\ActionRequiredException as PluginActionRequiredException;
+use JMS\Payment\CoreBundle\Plugin\Exception\ActionRequiredException;
 use JMS\Payment\CoreBundle\Plugin\Exception\BlockedException;
 use JMS\Payment\CoreBundle\Plugin\Exception\FinancialException;
 use JMS\Payment\CoreBundle\Plugin\Exception\PaymentPendingException;
@@ -44,10 +45,6 @@ class YandexKassaPlugin extends AbstractPlugin
         return 'yandexkassa' === $paymentSystemName;
     }
 
-    /**
-     * @param FinancialTransactionInterface $transaction
-     * @param $retry
-     */
     public function approveAndDeposit(FinancialTransactionInterface $transaction, $retry)
     {
         if ($transaction->getState() === FinancialTransactionInterface::STATE_NEW) {
@@ -60,18 +57,12 @@ class YandexKassaPlugin extends AbstractPlugin
         $transaction->setReasonCode(PluginInterface::REASON_CODE_SUCCESS);
     }
 
-    /**
-     * @param FinancialTransactionInterface $transaction
-     * @return PluginActionRequiredException
-     */
+
     public function createRedirectActionException(FinancialTransactionInterface $transaction)
     {
-        $actionRequest = new PluginActionRequiredException('Redirect to pay (YandexKassa)');
+        $actionRequest = new ActionRequiredException('Redirect to pay');
         $actionRequest->setFinancialTransaction($transaction);
-        $url = $this->client->getRedirectUrl($transaction);
-
-        $actionRequest->setAction(new VisitUrl($url));
-
+        $actionRequest->setAction(new VisitUrl($this->client->getRedirectUrl($transaction)));
         return $actionRequest;
     }
 }

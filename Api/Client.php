@@ -11,7 +11,6 @@ namespace Rispo\YandexKassaBundle\Api;
 use JMS\Payment\CoreBundle\Model\FinancialTransactionInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use JMS\Payment\CoreBundle\Plugin\PluginInterface;
-use FOS\UserBundle\Model\User;
 
 /**
  * Class Client
@@ -20,7 +19,7 @@ use FOS\UserBundle\Model\User;
 class Client
 {
     /** @var Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface */
-    private $tokenStorage;
+    private $token_storage;
 
     /** @var string */
     private $shopId;
@@ -34,9 +33,17 @@ class Client
     /** @var bool */
     private $test;
 
-    public function __construct(TokenStorageInterface $tokenStorage, $shopId, $scid, $shopPassword, $test)
+    /**
+     * Client constructor.
+     * @param TokenStorageInterface $token_storage
+     * @param $shopId
+     * @param $scid
+     * @param $shopPassword
+     * @param $test
+     */
+    public function __construct(TokenStorageInterface $token_storage, $shopId, $scid, $shopPassword, $test)
     {
-        $this->tokenStorage = $tokenStorage;
+        $this->token_storage = $token_storage;
         $this->shopId = $shopId;
         $this->scid = $scid;
         $this->shopPassword = $shopPassword;
@@ -65,41 +72,15 @@ class Client
         $data = $transaction->getExtendedData();
         $data->set('inv_id', $inv_id);
 
-        $data = [
+        $parameters = [
             'shopId' => $this->shopId,
             'scid' => $this->scid,
             'Sum' => $transaction->getRequestedAmount(),
-            'cms_name' => 'symfony2-github',
+            'cms_name' => 'symfony-github',
             'orderNumber' => $instruction->getId()
         ];
 
-        $user = $this->tokenStorage->getToken()->getUser();
-        if ($user instanceof User) {
-            $data['customerNumber'] = $user->getId();
-        } else {
-            $data['customerNumber'] = 0;
-        }
-
-        $url = $this->getWebServerUrl();
-
-        // Initialize Guzzle client
-        $client = new \GuzzleHttp\Client();
-
-        // Create a POST request
-        $response = $client->request(
-            'POST',
-            $url,
-            [
-                'form_params' => $data,
-                'allow_redirects' => false
-            ]
-        );
-
-        if($response->getStatusCode() == 302) {
-            return $response->getHeaderLine('Location');
-        } else {
-            throw new \Exception('Yandex.Kassa no redirect!');
-        }
+        return $this->getWebServerUrl() . '?' . http_build_query($parameters);
     }
 
 }
