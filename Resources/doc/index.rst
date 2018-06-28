@@ -79,7 +79,7 @@ Configuration
 .. code-block :: yml
 
     // routing.yml
-    karser_robokassa:
+    rispo_yandexkassa:
         resource: "@RispoYandexKassaBundle/Resources/config/routing.yml"
         prefix:   /
 
