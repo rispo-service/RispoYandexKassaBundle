@@ -18,7 +18,7 @@
     // in AppKernel::registerBundles()
     $bundles = array(
         // ...
-        new Rispo\YandexKassaBundle\RispoYandexKassaBudnle(),
+        new Rispo\YandexKassaBundle\RispoYandexKassaBundle(),
         // ...
     );
 
