@@ -75,3 +75,69 @@
 =====
 
 Информация об использовании доступна по адресу `пример <https://github.com/schmittjoh/JMSPaymentCoreBundle/blob/master/Resources/doc/usage.rst>`_
+
+Example:
+
+.. code-block :: php
+
+    <?php
+
+    namespace AppBundle\EventListener;
+
+    use AppBundle\Entity\PaidService;
+    use AppBundle\Entity\PaidServiceTransaction;
+    use JMS\Payment\CoreBundle\Model\FinancialTransactionInterface;
+    use JMS\Payment\CoreBundle\Model\PaymentInterface;
+    use JMS\Payment\CoreBundle\PluginController\Event\PaymentStateChangeEvent;
+    use JMS\DiExtraBundle\Annotation as DI;
+    use Symfony\Component\DependencyInjection\ContainerInterface;
+
+    /**
+     * Payment listener.
+     *
+     * @DI\Service("app.payment_listener", public=true)
+     * @DI\Tag("kernel.event_listener", attributes = {"event" = "payment.state_change", "method" = "onPaymentStateChange"})
+     */
+    class PaymentListener
+    {
+        /** @var  ContainerInterface */
+        private $container;
+
+        /**
+         * @DI\InjectParams({
+         *     "container" = @DI\Inject("service_container"),
+         * })
+         */
+        public function __construct($container)
+        {
+            $this->container = $container;
+        }
+
+        public function onPaymentStateChange(PaymentStateChangeEvent $event)
+        {
+            $payment = $event->getPayment();
+            $instruction = $event->getPaymentInstruction();
+
+            if ($event->getNewState() == PaymentInterface::STATE_DEPOSITED) {
+                /** @var $em \Doctrine\ORM\EntityManager */
+                $em = $this->container->get("doctrine")->getManager();
+
+                $service = $em->getRepository("AppBundle:PaidServiceTransaction")->findOneBy([
+                    "paymentInstruction" => $instruction,
+                ]);
+
+                if ($service instanceof PaidServiceTransaction) {
+                    if (!$service->getPaymentSent()) {
+                        $service->setPaymentSent(true);
+                        $service->setPaymentSentAt(new \DateTime());
+
+                        $em->persist($service);
+                        $em->flush($service);
+
+                        // Apply Services
+                        $this->container->get("app.paid_services_manager")->apply($service);
+                    }
+                }
+            }
+        }
+    }
